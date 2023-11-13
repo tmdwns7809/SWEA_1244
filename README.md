@@ -1,124 +1,137 @@
 # SW Expert Academy 1244. 최대 상금
-> [링크][link]
+> [문제링크][link]
 
 [link]: https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV15Khn6AN0CFAYD&categoryId=AV15Khn6AN0CFAYD&categoryType=CODE&problemTitle=1244&orderBy=FIRST_REG_DATETIME&selectCodeLang=ALL&select-1=&pageSize=10&pageIndex=1 "link"
 
-<br/><br/><br/>
+<br/>
 
-## 문제
-![문제1](/images/문제1.PNG)
-![문제2](/images/문제2.PNG)
+---
 
-<br/><br/><br/>
+<br/>
 
-## 코드
-``` Java
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+## i. 문제
+> ![문제1](/images/문제1.PNG)
+> ![문제2](/images/문제2.PNG)
 
-class Solution
-{
-	public static int result;
-    
-	public static void main(String args[]) throws Exception
-	{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		
-		int T = Integer.parseInt(br.readLine());
+<br/>
 
-		for(int test_case = 1; test_case <= T; test_case++) {
-			
-			StringTokenizer st = new StringTokenizer(br.readLine());
-		
-			// 처음 받은 카드 배열로 만들어진 숫자
-			int number = Integer.parseInt(st.nextToken());
-			
-			// 교환해야하는 횟수
-			int cnt = Integer.parseInt(st.nextToken());
-			
-			// 받은 숫자를 우선 교환하기 편하게 만들기 위해 문자의 배열로 변환
-			char[] numbers = Integer.toString(number).toCharArray();
-			
-			// 정답을 저장할 변수의 초기화
-			result = 0;
-			
-			// ******************** 1. 완전 탐색을 시작하기 전 의미없는 교환 횟수를 제거한다.  ********************
+---
 
-			if (numbers.length - 1 < cnt) 
-				cnt = numbers.length - 1 + (cnt - numbers.length + 1) % 2;
+<br/>
 
-			// *****************************************************************************
-		
-			// 완전탐색을 수행하며 만들 수 있는 최대 숫자를 찾는다
-			dfs(cnt,0, numbers);
-            
-			// 정답을 출력한다
-			System.out.println("#" + test_case + " " + result);
-            
-		}
-		
-	}
+## ii. 코드
+>``` Java
+>import java.io.BufferedReader;
+>import java.io.InputStreamReader;
+>import java.util.StringTokenizer;
+> 
+>class Solution
+>{
+>	public static int result;
+>	
+>	public static void main(String args[]) throws Exception
+>	{
+>		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+>
+>		// 반복할 테스트 케이스 횟수
+>		int T = Integer.parseInt(br.readLine());
+>
+>		// 테스트 케이스 수만큼 반복
+>		for(int test_case = 1; test_case <= T; test_case++) {
+>			
+>			StringTokenizer st = new StringTokenizer(br.readLine());
+>		
+>			// 처음 숫자
+>			int number = Integer.parseInt(st.nextToken());
+>			
+>			// 교환해야하는 횟수
+>			int C = Integer.parseInt(st.nextToken());
+>			
+>			// 처음 숫자를 문자의 배열로 변환
+>			char[] numbers = Integer.toString(number).toCharArray();
+>			
+>			// 정답 초기화
+>			result = 0;
+>			
+>			// -----------------------------------------------------------------
+>			// --- 1. 완전 탐색을 시작하기 전 의미없는 교환 횟수를 제거한다. ---
+>			int N = numbers.length;
+>			if (N-1 < C) 
+>				C = (N-1) - ((C - (N-1)) % 2);
+>			// -----------------------------------------------------------------
+>			
+>			// 완전탐색 수행
+>			dfs(C,0, numbers);
+>            
+>			// 정답 출력
+>			System.out.println("#" + test_case + " " + result);
+>            
+>		}
+>		
+>	}
+>	
+>	// 완전 탐색
+>	public static void dfs(int cnt, int start, char[] numbers) {
+>		
+>		// 교환 횟수를 전부 수행했다면 종료
+>		if(cnt==0) {
+>			
+>			// 현재 카드의 배치를 숫자로 변환 한다 
+>			int current = Integer.parseInt(new String(numbers));
+>			
+>			// 만들어진 숫자가 기존의 정답보다 크다면 갱신한다
+>			if(current > result)
+>				result = current;
+>			
+>			return;
+>			
+>		}
+>
+>		// 교환 횟수만큼 가능한 모든 교환을 진행한다
+>		for(int i=start; i<numbers.length-1; ++i) 
+>			for(int j=i+1; j<numbers.length; ++j) {
+>				
+>				// 교환 횟수 1을 소모 하여 i, j 위치의 카드들을 교환한뒤 다음 교환을 진행한다
+>				char temp = numbers[i];
+>				numbers[i] = numbers[j];
+>				numbers[j] = temp;
+>
+>				// -----------------------------------------------------------------
+>				// ----------- 2. 이미 나왔던 배치의 재탐색을 제외한다. ------------
+>				dfs(cnt-1, i, numbers);
+>				// -----------------------------------------------------------------
+>
+>				numbers[j] = numbers[i];
+>				numbers[i] = temp;
+>				
+>			}
+>		
+>	}
+>	
+>}
+>```
+
+<br/>
+
+---
+
+<br/>
+
+## iii. 풀이
+	* 문제요약 *
 	
-	// 완전 탐색
-	public static void dfs(int cnt, int start, char[] numbers) {
-		
-		// 교환 횟수를 전부 수행했다면 종료
-		if(cnt==0) {
-			
-			// 현재 카드의 배치를 숫자로 변환 한다 
-			int current = Integer.parseInt(new String(numbers));
-			
-			// 만들어진 숫자가 기존의 정답보다 크다면 갱신한다
-			if(current>result)
-				result = current;
-			
-			
-			return;
-			
-		}
+	N개의 숫자가 순서대로 주어지고
+	C횟수를 반드시 교환해야 할 때
+	만들수 있는 최대 상금
 
-		// 교환 횟수만큼 가능한 모든 교환을 진행한다
-		for(int i=start; i<numbers.length-1; ++i) 
-			for(int j=i+1; j<numbers.length; ++j) {
-				
-				// 교환 횟수 1을 소모 하여 i, j 위치의 카드들을 교환한뒤 다음 교환을 진행한다
-                char temp = numbers[i];
-				numbers[i] = numbers[j];
-				numbers[j] = temp;
-
-				// ******************** 2. 이미 나왔던 배치의 재탐색을 제외한다.  ********************
-
-				dfs(cnt-1, i, numbers);
-
-				// *****************************************************************************
-
-				numbers[j] = numbers[i];
-				numbers[i] = temp;
-				
-			}
-		
-	}
-	
-}
-```
-
-<br/><br/><br/>
-
-## 풀이
-
-입력받은 카드의 **개수를 N**
-교환해야하는 **횟수를 C**
-라고 한다면
-
-단순히 완전탐색을 수행하며 최대 상금을 찾을 경우 N = 6, C = 10 일 경우
-5!^10 이라는 매우 큰 경우의 수를 탐색해야 되는 경우가 생길 수 있다.
+단순히 완전탐색을 수행하면 최악의 경우 N = 6, C = 10 일때
+5!^10 이라는 매우 큰 경우의 수를 탐색해야 한다.
 
 따라서 그리디적인 방법을 사용하여 교환 횟수와 탐색 횟수를 줄여줘야 한다.
 
-<br/><br/>
+<br/>
 
-### ***1. 완전 탐색을 시작하기 전 의미없는 교환 횟수를 제거한다.***
+#### ***1. 완전 탐색을 시작하기 전 의미없는 교환 횟수를 제거한다.***
 
 	C 가 N-1 보다 클 경우 C 횟수를 교환하여 만들 수 있는 최대 상금은 교환 횟수가 N-1을 넘기 이전에 이미 만들어 질 수 있다.
 증명
@@ -164,9 +177,13 @@ C-2 가 N-1보다 크다면 C 교환 횟수로 만들 수 있는 최대 상금�
 
 ### ***따라서 다음 교환의 첫번째 카드의 위치를 이전 교환까지의 첫번째 카드의 위치 이전 부터 교환하는 것은 그 이전에 이미 나온 배치일 것이므로 다음교환의 첫번째 카드의 시작 위치는 현재교환의 첫번째 카드의 위치부터만 고려하면 된다.***
 
-<br/><br/><br/>
+<br/>
 
-## 추가
+---
+
+<br/>
+
+## iv. 추가
 
 ``` Java
 	if(numbers.length<cnt)
